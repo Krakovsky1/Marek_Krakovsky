@@ -18,3 +18,12 @@ Zdrojové dáta pochádzajú z Northwind datasetu dostupného na GitHub.com. Dat
 - `Dodávatelia`: Detaily objednávky.
 
 Účelom ETL procesu bolo tieto dáta pripraviť, transformovať a sprístupniť pre viacdimenzionálnu analýzu.
+
+### **ERD diagram**
+Surové dáta sú usporiadané v relačnom modeli, ktorý je znázornený na **entitno-relačnom diagrame (ERD)**:
+
+<p align="center">
+  <img src="https://github.com/Krakovsky1/Marek_Krakovsky/blob/main/projektFoto.png" alt="ERD Schema">
+  <br>
+  <em>Obrázok 1 Entitno-relačná schéma Northwind</em>
+</p>
