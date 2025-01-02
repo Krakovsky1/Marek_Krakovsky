@@ -154,89 +154,83 @@ Dashboard obsahuje `6 vizualizácií`, ktoré poskytujú základný prehľad o k
 </p>
 
 ---
-### **Graf 1: Výkonnosť zamestnancov**
-Táto vizualizácia zobrazuje 10 kníh s najväčším počtom hodnotení. Umožňuje identifikovať najpopulárnejšie tituly medzi používateľmi. Zistíme napríklad, že kniha `Wild Animus` má výrazne viac hodnotení v porovnaní s ostatnými knihami. Tieto informácie môžu byť užitočné na odporúčanie kníh alebo marketingové kampane.
-
+#### **Graf 1: Výkonnosť zamestnancov**
+Tento graf zobrazuje tržby generované jednotlivými zamestnancami. Pomáha identifikovať najvýkonnejších zamestnancov podľa celkových tržieb.
 ```sql
 SELECT 
     e.EmployeeName AS "Zamestnanec",
-    SUM(f.TotalRevenue) AS "Celkové tržby"
+    SUM(f.TotalRevenue) AS "Tržby"
 FROM FactOrders f
 JOIN DimEmployees e ON f.EmployeeID = e.EmployeeID
 GROUP BY e.EmployeeName
-ORDER BY "Celkové tržby" DESC;
+ORDER BY "Tržby" DESC;
 ```
----
-### **Graf 2: Predaj podľa mesiacov**
-Graf znázorňuje rozdiely v počte hodnotení medzi mužmi a ženami. Z údajov je zrejmé, že ženy hodnotili knihy o niečo častejšie ako muži, no rozdiely sú minimálne a aktivita medzi pohlaviami je viac-menej vyrovnaná. Táto vizualizácia ukazuje, že obsah alebo kampane môžu byť efektívne zamerané na obe pohlavia bez potreby výrazného rozlišovania.
 
+#### **Graf 2: Predaj podľa mesiacov**
+Graf ukazuje tržby rozdelené podľa mesiacov a umožňuje identifikovať sezónne trendy v predaji.
 ```sql
 SELECT 
-    u.gender,
-    COUNT(f.fact_ratingID) AS total_ratings
-FROM FACT_RATINGS f
-JOIN DIM_USERS u ON f.userID = u.dim_userId
-GROUP BY u.gender;
+    t.MonthName AS "Mesiac",
+    SUM(f.TotalRevenue) AS "Celkové tržby"
+FROM FactOrders f
+JOIN DimTime t ON f.OrderDate = t.DateKey
+GROUP BY t.MonthName, t.Month
+ORDER BY t.Month;
 ```
----
-### **Graf 3: Trendy hodnotení kníh podľa rokov vydania (2000–2024)**
-Graf ukazuje, ako sa priemerné hodnotenie kníh mení podľa roku ich vydania v období 2000–2024. Z vizualizácie je vidieť, že medzi rokmi 2000 a 2005 si knihy udržiavali stabilné priemerné hodnotenie. Po tomto období však nastal výrazný pokles priemerného hodnotenia. Od tohto bodu opäť postupne stúpajú a  po roku 2020, je tendencia, že knihy získavajú vyššie priemerné hodnotenia. Tento trend môže naznačovať zmenu kvality kníh, vývoj čitateľských preferencií alebo rozdiely v hodnotiacich kritériách používateľov.
 
+#### **Graf 3: Produkty s najväčším predajom**
+Vizualizácia zobrazuje produkty, ktoré generovali najvyššie tržby, a pomáha identifikovať najziskovejšie produkty.
 ```sql
 SELECT 
-    b.release_year AS year,
-    AVG(f.rating) AS avg_rating
-FROM FACT_RATINGS f
-JOIN DIM_BOOKS b ON f.bookID = b.dim_bookId
-WHERE b.release_year BETWEEN 2000 AND 2024
-GROUP BY b.release_year
-ORDER BY b.release_year;
-```
----
-### **Graf 4: Celková aktivita počas dní v týždni**
-Tabuľka znázorňuje, ako sú hodnotenia rozdelené podľa jednotlivých dní v týždni. Z údajov vyplýva, že najväčšia aktivita je zaznamenaná cez víkendy (sobota a nedeľa) a počas dní na prelome pracovného týždňa a víkendu (piatok a pondelok). Tento trend naznačuje, že používatelia majú viac času na čítanie a hodnotenie kníh počas voľných dní.
-
-```sql
-SELECT 
-    d.dayOfWeekAsString AS day,
-    COUNT(f.fact_ratingID) AS total_ratings
-FROM FACT_RATINGS f
-JOIN DIM_DATE d ON f.dateID = d.dim_dateID
-GROUP BY d.dayOfWeekAsString
-ORDER BY total_ratings DESC;
-```
----
-### **Graf 5: Počet hodnotení podľa povolaní**
-Tento graf  poskytuje informácie o počte hodnotení podľa povolaní používateľov. Umožňuje analyzovať, ktoré profesijné skupiny sú najviac aktívne pri hodnotení kníh a ako môžu byť tieto skupiny zacielené pri vytváraní personalizovaných odporúčaní. Z údajov je zrejmé, že najaktívnejšími profesijnými skupinami sú `Marketing Specialists` a `Librarians`, s viac ako 1 miliónom hodnotení. 
-
-```sql
-SELECT 
-    u.occupation AS occupation,
-    COUNT(f.fact_ratingID) AS total_ratings
-FROM FACT_RATINGS f
-JOIN DIM_USERS u ON f.userID = u.dim_userId
-GROUP BY u.occupation
-ORDER BY total_ratings DESC
+    p.ProductName AS "Produkt",
+    SUM(f.TotalRevenue) AS "Celkové tržby"
+FROM FactOrders f
+JOIN DimProducts p ON f.ProductID = p.ProductID
+GROUP BY p.ProductName
+ORDER BY "Celkové tržby" DESC
 LIMIT 10;
 ```
----
-### **Graf 6: Aktivita používateľov počas dňa podľa vekových kategórií**
-Tento stĺpcový graf ukazuje, ako sa aktivita používateľov mení počas dňa (dopoludnia vs. popoludnia) a ako sa líši medzi rôznymi vekovými skupinami. Z grafu vyplýva, že používatelia vo vekovej kategórii `55+` sú aktívni rovnomerne počas celého dňa, zatiaľ čo ostatné vekové skupiny vykazujú výrazne nižšiu aktivitu a majú obmedzený čas na hodnotenie, čo môže súvisieť s pracovnými povinnosťami. Tieto informácie môžu pomôcť lepšie zacieliť obsah a plánovať aktivity pre rôzne vekové kategórie.
+
+#### **Graf 4: Top 10 produktov podľa počtu objednávok**
+Tento graf ukazuje produkty, ktoré boli najčastejšie objednávané, čo pomáha identifikovať ich obľúbenosť u zákazníkov.
 ```sql
 SELECT 
-    t.ampm AS time_period,
-    u.age_group AS age_group,
-    COUNT(f.fact_ratingID) AS total_ratings
-FROM FACT_RATINGS f
-JOIN DIM_TIME t ON f.timeID = t.dim_timeID
-JOIN DIM_USERS u ON f.userID = u.dim_userId
-GROUP BY t.ampm, u.age_group
-ORDER BY time_period, total_ratings DESC;
-
+    p.ProductName AS "Produkt",
+    COUNT(f.OrderID) AS "Počet objednávok"
+FROM FactOrders f
+JOIN DimProducts p ON f.ProductID = p.ProductID
+GROUP BY p.ProductName
+ORDER BY "Počet objednávok" DESC
+LIMIT 10;
 ```
 
-Dashboard poskytuje komplexný pohľad na dáta, pričom zodpovedá dôležité otázky týkajúce sa čitateľských preferencií a správania používateľov. Vizualizácie umožňujú jednoduchú interpretáciu dát a môžu byť využité na optimalizáciu odporúčacích systémov, marketingových stratégií a knižničných služieb.
+#### **Graf 5: Predaje podľa dopravcov**
+Graf zobrazuje celkové tržby generované jednotlivými dopravcami, čo môže pomôcť pri optimalizácii logistiky.
+```sql
+SELECT 
+    s.ShipperName AS "Dopravca",
+    SUM(f.TotalRevenue) AS "Celkové tržby"
+FROM FactOrders f
+JOIN DimShippers s ON f.ShipperID = s.ShipperID
+GROUP BY s.ShipperName
+ORDER BY "Celkové tržby" DESC;
+```
+
+#### **Graf 6: Tržby podľa kategórií**
+Táto vizualizácia ukazuje, ktoré kategórie produktov generujú najvyššie tržby.
+```sql
+SELECT 
+    c.CategoryName AS "Kategória",
+    SUM(f.TotalRevenue) AS "Celkové tržby"
+FROM FactOrders f
+JOIN DimProducts p ON f.ProductID = p.ProductID
+JOIN DimCategories c ON p.CategoryID = c.CategoryID
+GROUP BY c.CategoryName
+ORDER BY "Celkové tržby" DESC;
+```
+
+Dashboard poskytuje komplexný pohľad na obchodné transakcie a aktivity v rámci organizácie. Vizualizácie umožňujú jednoduchú interpretáciu dát, ako sú preferencie zákazníkov, výkonnosť zamestnancov, efektivita dopravcov a predajné trendy produktov a kategórií. Tento prehľad je užitočný pri optimalizácii predajných stratégií, plánovaní zásob a zlepšovaní služieb zákazníkom.
 
 ---
 
-**Autor:** Janka Pecuchová
+**Autor:** Marek Krakovský
