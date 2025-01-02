@@ -15,7 +15,7 @@ Zdrojové dáta pochádzajú z Northwind datasetu dostupného na GitHub.com. Dat
 - `Categories`: Kategórie.
 - `Employees`: Informácie o zamestnancoch.
 - `Order Details`: Detaily objednávky.
-- `Suppliers`: Detaily objednávky.
+- `Suppliers`: Dodávatelia.
 
 Účelom ETL procesu bolo tieto dáta pripraviť, transformovať a sprístupniť pre viacdimenzionálnu analýzu.
 
@@ -70,7 +70,7 @@ ON_ERROR = 'CONTINUE';
 V prípade nekonzistentných záznamov bol použitý parameter `ON_ERROR = 'CONTINUE'`, ktorý zabezpečil pokračovanie procesu bez prerušenia pri chybách.
 
 ---
-### **4.2 Transformácia dát**
+### **4.2 (Transform) Transformácia dát**
 
 V tejto fáze boli dáta zo staging tabuliek vyčistené, transformované a obohatené. Hlavným cieľom bolo pripraviť dimenzie a faktovú tabuľku, ktoré umožnia jednoduchú a efektívnu analýzu.
 
@@ -127,7 +127,7 @@ JOIN products_staging p ON od.ProductID = p.ProductID;
 ```
 ---
 
-### **4.3 Načítanie dát**
+### **4.3 (Load) Načítanie dát**
 
 Po úspešnom vytvorení dimenzií a faktovej tabuľky boli dáta nahraté do finálnej štruktúry. Na záver boli staging tabuľky odstránené, aby sa optimalizovalo využitie úložiska:
 ```sql
