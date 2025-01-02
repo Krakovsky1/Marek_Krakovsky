@@ -143,7 +143,7 @@ DROP TABLE IF EXISTS orderdetails_staging;
 ETL proces v Snowflake umožnil spracovanie pôvodných dát z `.csv` formátu do viacdimenzionálneho modelu typu hviezda. Tento proces zahŕňal čistenie, obohacovanie a reorganizáciu údajov. Výsledný model umožňuje analýzu obchodných transakcií, správania zákazníkov a efektivity zamestnancov, pričom poskytuje základ pre vizualizácie a reporty.
 
 ---
-## **4 Vizualizácia dát**
+## **5 Vizualizácia dát**
 
 Dashboard obsahuje `6 vizualizácií`, ktoré poskytujú základný prehľad o kľúčových metrikách a trendoch týkajúcich sa produktov, používateľov a objednávkach. Tieto vizualizácie odpovedajú na dôležité otázky a umožnujú zodpovedať rôzne otázky.
 
@@ -154,3 +154,89 @@ Dashboard obsahuje `6 vizualizácií`, ktoré poskytujú základný prehľad o k
 </p>
 
 ---
+### **Graf 1: Výkonnosť zamestnancov**
+Táto vizualizácia zobrazuje 10 kníh s najväčším počtom hodnotení. Umožňuje identifikovať najpopulárnejšie tituly medzi používateľmi. Zistíme napríklad, že kniha `Wild Animus` má výrazne viac hodnotení v porovnaní s ostatnými knihami. Tieto informácie môžu byť užitočné na odporúčanie kníh alebo marketingové kampane.
+
+```sql
+SELECT 
+    e.EmployeeName AS "Zamestnanec",
+    SUM(f.TotalRevenue) AS "Celkové tržby"
+FROM FactOrders f
+JOIN DimEmployees e ON f.EmployeeID = e.EmployeeID
+GROUP BY e.EmployeeName
+ORDER BY "Celkové tržby" DESC;
+```
+---
+### **Graf 2: Predaj podľa mesiacov**
+Graf znázorňuje rozdiely v počte hodnotení medzi mužmi a ženami. Z údajov je zrejmé, že ženy hodnotili knihy o niečo častejšie ako muži, no rozdiely sú minimálne a aktivita medzi pohlaviami je viac-menej vyrovnaná. Táto vizualizácia ukazuje, že obsah alebo kampane môžu byť efektívne zamerané na obe pohlavia bez potreby výrazného rozlišovania.
+
+```sql
+SELECT 
+    u.gender,
+    COUNT(f.fact_ratingID) AS total_ratings
+FROM FACT_RATINGS f
+JOIN DIM_USERS u ON f.userID = u.dim_userId
+GROUP BY u.gender;
+```
+---
+### **Graf 3: Trendy hodnotení kníh podľa rokov vydania (2000–2024)**
+Graf ukazuje, ako sa priemerné hodnotenie kníh mení podľa roku ich vydania v období 2000–2024. Z vizualizácie je vidieť, že medzi rokmi 2000 a 2005 si knihy udržiavali stabilné priemerné hodnotenie. Po tomto období však nastal výrazný pokles priemerného hodnotenia. Od tohto bodu opäť postupne stúpajú a  po roku 2020, je tendencia, že knihy získavajú vyššie priemerné hodnotenia. Tento trend môže naznačovať zmenu kvality kníh, vývoj čitateľských preferencií alebo rozdiely v hodnotiacich kritériách používateľov.
+
+```sql
+SELECT 
+    b.release_year AS year,
+    AVG(f.rating) AS avg_rating
+FROM FACT_RATINGS f
+JOIN DIM_BOOKS b ON f.bookID = b.dim_bookId
+WHERE b.release_year BETWEEN 2000 AND 2024
+GROUP BY b.release_year
+ORDER BY b.release_year;
+```
+---
+### **Graf 4: Celková aktivita počas dní v týždni**
+Tabuľka znázorňuje, ako sú hodnotenia rozdelené podľa jednotlivých dní v týždni. Z údajov vyplýva, že najväčšia aktivita je zaznamenaná cez víkendy (sobota a nedeľa) a počas dní na prelome pracovného týždňa a víkendu (piatok a pondelok). Tento trend naznačuje, že používatelia majú viac času na čítanie a hodnotenie kníh počas voľných dní.
+
+```sql
+SELECT 
+    d.dayOfWeekAsString AS day,
+    COUNT(f.fact_ratingID) AS total_ratings
+FROM FACT_RATINGS f
+JOIN DIM_DATE d ON f.dateID = d.dim_dateID
+GROUP BY d.dayOfWeekAsString
+ORDER BY total_ratings DESC;
+```
+---
+### **Graf 5: Počet hodnotení podľa povolaní**
+Tento graf  poskytuje informácie o počte hodnotení podľa povolaní používateľov. Umožňuje analyzovať, ktoré profesijné skupiny sú najviac aktívne pri hodnotení kníh a ako môžu byť tieto skupiny zacielené pri vytváraní personalizovaných odporúčaní. Z údajov je zrejmé, že najaktívnejšími profesijnými skupinami sú `Marketing Specialists` a `Librarians`, s viac ako 1 miliónom hodnotení. 
+
+```sql
+SELECT 
+    u.occupation AS occupation,
+    COUNT(f.fact_ratingID) AS total_ratings
+FROM FACT_RATINGS f
+JOIN DIM_USERS u ON f.userID = u.dim_userId
+GROUP BY u.occupation
+ORDER BY total_ratings DESC
+LIMIT 10;
+```
+---
+### **Graf 6: Aktivita používateľov počas dňa podľa vekových kategórií**
+Tento stĺpcový graf ukazuje, ako sa aktivita používateľov mení počas dňa (dopoludnia vs. popoludnia) a ako sa líši medzi rôznymi vekovými skupinami. Z grafu vyplýva, že používatelia vo vekovej kategórii `55+` sú aktívni rovnomerne počas celého dňa, zatiaľ čo ostatné vekové skupiny vykazujú výrazne nižšiu aktivitu a majú obmedzený čas na hodnotenie, čo môže súvisieť s pracovnými povinnosťami. Tieto informácie môžu pomôcť lepšie zacieliť obsah a plánovať aktivity pre rôzne vekové kategórie.
+```sql
+SELECT 
+    t.ampm AS time_period,
+    u.age_group AS age_group,
+    COUNT(f.fact_ratingID) AS total_ratings
+FROM FACT_RATINGS f
+JOIN DIM_TIME t ON f.timeID = t.dim_timeID
+JOIN DIM_USERS u ON f.userID = u.dim_userId
+GROUP BY t.ampm, u.age_group
+ORDER BY time_period, total_ratings DESC;
+
+```
+
+Dashboard poskytuje komplexný pohľad na dáta, pričom zodpovedá dôležité otázky týkajúce sa čitateľských preferencií a správania používateľov. Vizualizácie umožňujú jednoduchú interpretáciu dát a môžu byť využité na optimalizáciu odporúčacích systémov, marketingových stratégií a knižničných služieb.
+
+---
+
+**Autor:** Janka Pecuchová
