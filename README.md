@@ -141,3 +141,16 @@ DROP TABLE IF EXISTS orders_staging;
 DROP TABLE IF EXISTS orderdetails_staging;
 ```
 ETL proces v Snowflake umožnil spracovanie pôvodných dát z `.csv` formátu do viacdimenzionálneho modelu typu hviezda. Tento proces zahŕňal čistenie, obohacovanie a reorganizáciu údajov. Výsledný model umožňuje analýzu obchodných transakcií, správania zákazníkov a efektivity zamestnancov, pričom poskytuje základ pre vizualizácie a reporty.
+
+---
+## **4 Vizualizácia dát**
+
+Dashboard obsahuje `6 vizualizácií`, ktoré poskytujú základný prehľad o kľúčových metrikách a trendoch týkajúcich sa produktov, používateľov a objednávkach. Tieto vizualizácie odpovedajú na dôležité otázky a umožnujú zodpovedať rôzne otázky.
+
+<p align="center">
+  <img src="https://github.com/JKabathova/AmazonBooks-ETL/blob/master/amazonbooks_dashboard.png" alt="ERD Schema">
+  <br>
+  <em>Obrázok 3 Dashboard AmazonBooks datasetu</em>
+</p>
+
+---
