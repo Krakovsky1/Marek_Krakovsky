@@ -148,9 +148,9 @@ ETL proces v Snowflake umožnil spracovanie pôvodných dát z `.csv` formátu d
 Dashboard obsahuje `6 vizualizácií`, ktoré poskytujú základný prehľad o kľúčových metrikách a trendoch týkajúcich sa produktov, používateľov a objednávkach. Tieto vizualizácie odpovedajú na dôležité otázky a umožnujú zodpovedať rôzne otázky.
 
 <p align="center">
-  <img src="https://github.com/JKabathova/AmazonBooks-ETL/blob/master/amazonbooks_dashboard.png" alt="ERD Schema">
+  <img src="https://github.com/Krakovsky1/Marek_Krakovsky/blob/main/visualizations.png" alt="ERD Schema">
   <br>
-  <em>Obrázok 3 Dashboard AmazonBooks datasetu</em>
+  <em>Obrázok 3 Dashboard Northwind datasetu</em>
 </p>
 
 ---
