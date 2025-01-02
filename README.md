@@ -31,18 +31,18 @@ Surové dáta sú usporiadané v relačnom modeli, ktorý je znázornený na **e
 ---
 ## **3 Dimenzionálny model**
 
-Navrhnutý bol **hviezdicový model (star schema)**, pre efektívnu analýzu kde centrálny bod predstavuje faktová tabuľka **`fact_ratings`**, ktorá je prepojená s nasledujúcimi dimenziami:
-- **`Customers_Dimension`**: Obsahuje podrobné informácie o zákazníkoch (názov, autor, rok vydania, vydavateľ).
-- **`Shippers_Dimension`**: Obsahuje demografické údaje o používateľoch, ako sú vekové kategórie, pohlavie, povolanie a vzdelanie.
-- **`Employees_Dimension`**: Zahrňuje informácie o dátumoch hodnotení (deň, mesiac, rok, štvrťrok).
-- **`Categories_Dimension`**: Obsahuje podrobné časové údaje (hodina, AM/PM).
-- **`Suppliers_Dimension`**: Obsahuje podrobné časové údaje (hodina, AM/PM).
-- **`Products_Dimension`**: Obsahuje podrobné časové údaje (hodina, AM/PM).
+Navrhnutý bol **hviezdicový model (star schema)**, pre efektívnu analýzu kde centrálny bod predstavuje faktová tabuľka **`FactOrders`**, ktorá je prepojená s nasledujúcimi dimenziami:
+- **`DimCategories`**: Obsahuje základné parametre ako názov kategórie a popis.
+- **`DimEmployees`**: Obsahuje údaje o zamestnancoch ako sú ich meno, dátum narodenia a nejaké jednoduché poznámky.
+- **`DimProducts`**: Zahrňuje informácie o názve produktu a o cene.
+- **`DimShippers`**: Obsahuje len názov dodávateľa.
+- **`DimTime`**: Obsahuje podrobné dátumové a časové údaje.
+- **`DimCustomers`**: Obsahuje údaje o zákazníkovi.
 
 Štruktúra hviezdicového modelu je znázornená na diagrame nižšie. Diagram ukazuje prepojenia medzi faktovou tabuľkou a dimenziami, čo zjednodušuje pochopenie a implementáciu modelu.
 
 <p align="center">
-  <img src="https://github.com/Krakovsky1/Marek_Krakovsky/blob/main/hviezda.png" alt="Star Schema">
+  <img src="https://github.com/Krakovsky1/Marek_Krakovsky/blob/main/starschema.png" alt="Star Schema">
   <br>
   <em>Obrázok 2 Schéma hviezdy pre Northwind</em>
 </p>
